@@ -1,8 +1,9 @@
+import Counter from "./features/counter/Counter";
 
 function App() {
   return (
    <div>
-this is react ap
+    <Counter></Counter>
    </div>
   );
 }
