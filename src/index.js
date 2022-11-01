@@ -5,12 +5,18 @@ import App from './App';
 import { store } from './app/store';
 import { Provider } from 'react-redux';
 import { fetchUsers } from './features/users/userSlice';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 const root = ReactDOM.createRoot(document.getElementById('root'));
 // store offer dispatch ==> so when we load data ==> we can now load all the user information
 store.dispatch(fetchUsers())
 root.render(
+
   <Provider store={store}>
-    <App />
+    <Router>
+      <Routes>
+        <Route path='/*' element={<App></App>}></Route>
+      </Routes>
+    </Router>
   </Provider>
 );
 

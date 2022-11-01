@@ -125,6 +125,9 @@ const postSlice = createSlice({
 export const selectAllPost = (state) => state.postsSliceReducer.posts;
 export const getPoststatus = (state) => state.postsSliceReducer.status;
 export const getPostsErr = (state) => state.postsSliceReducer.error;
+
+export const selectPostById = (state, postId) => state.postsSliceReducer.posts.find(post => post.id === postId)
+
 // epxort action
 export const { postAddded, reactionAdded } = postSlice.actions
 // export reducer
