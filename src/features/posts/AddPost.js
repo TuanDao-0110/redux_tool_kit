@@ -27,6 +27,7 @@ export default function AddPost() {
                 setContent("")
                 setUserId('')
                 setAddRequestStatus('idle')
+                
             } catch (error) {
                 console.log(error)
             } finally {

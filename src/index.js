@@ -6,9 +6,11 @@ import { store } from './app/store';
 import { Provider } from 'react-redux';
 import { fetchUsers } from './features/users/userSlice';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import { fetchPosts } from './features/posts/postsSlice';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 // store offer dispatch ==> so when we load data ==> we can now load all the user information
 store.dispatch(fetchUsers())
+store.dispatch(fetchPosts())
 root.render(
 
   <Provider store={store}>
