@@ -5,7 +5,7 @@ const initialState = {
 
 
 
- const counterSlice = createSlice({
+const counterSlice = createSlice({
     // create slice offer 3 porperty : 1. reducer name, 2. address its state, 3. action with name vs action
     // 1 . name for the reducer 
     name: 'counter',
@@ -17,13 +17,16 @@ const initialState = {
             state.count++
         },
         decrement: (state) => {
-            state.count -=1
+            state.count -= 1
+        },
+        reset: (state) => {
+            state.count = 0
         }
     }
 })
 
 // 4. now we can export it use: 
 
-export const { increment, decrement } = counterSlice.actions
+export const { increment, decrement ,reset} = counterSlice.actions
 
 export default counterSlice.reducer
