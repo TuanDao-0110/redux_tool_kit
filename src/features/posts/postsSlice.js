@@ -29,7 +29,28 @@ export const addNewPost = createAsyncThunk('post/addNewPost', async (initialPost
         return error
     }
 })
-
+// 3. delete post : 
+export const deletePost = createAsyncThunk('delete/post', async (initialPost) => {
+    const { id } = initialPost
+    try {
+        const response = await axios.delete(`${POSTS_URL}/${id}`)
+        console.log(response)
+        if (response?.status === 200) return initialPost
+        return `${response?.status}:${response?.statusText}`
+    } catch (error) {
+        return error
+    }
+})
+// 4.update post 
+export const updatePost = createAsyncThunk('post/updatePost', async (initialPost) => {
+    const { id } = initialPost
+    try {
+        const response = await axios.put(`${POSTS_URL}/${id}`, initialPost)
+        return response.data
+    } catch (error) {
+        return error.message
+    }
+})
 const postSlice = createSlice({
     name: 'posts',
     initialState,//initialState is known as initialState above ==> now it become this reducer's value
@@ -67,7 +88,9 @@ const postSlice = createSlice({
             if (existingPost) {
                 existingPost.reactions[reaction]++
             }
-        }
+        },
+
+
     },
     extraReducers: (builder) => {
         builder
@@ -118,6 +141,29 @@ const postSlice = createSlice({
                 }
                 state.posts.push(action.payload)
             })
+            .addCase(deletePost.fulfilled, (state, action) => {
+                if (!action.payload?.id) {
+                    console.log('Delete could not complete')
+                    console.log(action.payload)
+                    return
+                }
+                const { id } = action.payload
+                const posts = state.posts.filter(post => post.id === id)
+                state.posts = posts
+            })
+            .addCase(updatePost.fulfilled, (state, action) => {
+                if (!action.payload?.id) {
+                    console.log('update could not complete ')
+                    console.log(action.payload)
+                    return
+                }
+                const { id } = action.payload
+                action.payload.date = new Date().toISOString()
+                // every post have there special id ==> so we filter all the post except the  new one
+                const posts = state.posts.filter(post => post.id !== id)
+                // after then we add it to new arr and assign new arr to state.post
+                state.posts = [...posts, action.payload]
+            })
     }
 })
 
@@ -129,6 +175,6 @@ export const getPostsErr = (state) => state.postsSliceReducer.error;
 export const selectPostById = (state, postId) => state.postsSliceReducer.posts.find(post => post.id === postId)
 
 // epxort action
-export const { postAddded, reactionAdded } = postSlice.actions
+export const { postAddded, reactionAdded, } = postSlice.actions
 // export reducer
 export default postSlice.reducer
