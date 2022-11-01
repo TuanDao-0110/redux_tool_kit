@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import { store } from './app/store';
 import { Provider } from 'react-redux';
+import { fetchUsers } from './features/users/userSlice';
 const root = ReactDOM.createRoot(document.getElementById('root'));
+// store offer dispatch ==> so when we load data ==> we can now load all the user information
+store.dispatch(fetchUsers())
 root.render(
   <Provider store={store}>
     <App />

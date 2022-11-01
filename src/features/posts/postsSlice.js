@@ -20,6 +20,16 @@ export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
     }
 })
 
+// 2. new thunk middleware when create new post: 
+export const addNewPost = createAsyncThunk('post/addNewPost', async (initialPost) => {
+    try {
+        const response = await axios.post(POSTS_URL, initialPost)
+        return response.data
+    } catch (error) {
+        return error
+    }
+})
+
 const postSlice = createSlice({
     name: 'posts',
     initialState,//initialState is known as initialState above ==> now it become this reducer's value
@@ -59,7 +69,7 @@ const postSlice = createSlice({
             }
         }
     },
-    extraReducers(builder) {
+    extraReducers: (builder) => {
         builder
             // 1. the promise could be pending ==> we do action ==> by status ==> loading
             .addCase(fetchPosts.pending, (state, action) => {
@@ -83,17 +93,30 @@ const postSlice = createSlice({
                     }
                     return post
                 })
-                console.log(loadedPost)
                 // merge it the posts
                 state.posts = state.posts.concat(loadedPost)
             })
             // 3. in case we fail to fetch data.
-            .addCase(fetchPosts.rejected,(state,action)=> { 
+            .addCase(fetchPosts.rejected, (state, action) => {
                 // set status is failed
-                state.status = 'failed';
+                state.status = 'failed'
                 // this action error is created on catch
                 state.error = action.error.message
-            
+
+            })
+            // 4.case when add new post ==> we create a data send back from server
+            .addCase(addNewPost.fulfilled, (state, action) => {
+                // let { userId, date, reactions } = {...action.payload}
+                action.payload.userId = Number(action.payload.userId)
+                action.payload.date = new Date().toISOString();
+                action.payload.reactions = {
+                    thumbsUp: 0,
+                    wow: 0,
+                    heart: 0,
+                    rocket: 0,
+                    coffee: 0
+                }
+                state.posts.push(action.payload)
             })
     }
 })

@@ -1,25 +1,36 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 // nanoId help to generate random id 
-import { postAddded } from './postsSlice'
+import { addNewPost, postAddded } from './postsSlice'
 import { selectALlUser } from '../users/userSlice'
 export default function AddPost() {
 
     const [title, setTitle] = useState('')
     const [content, setContent] = useState('')
     const [userId, setUserId] = useState('')
-
+    const [addRequestStatus, setAddRequestStatus] = useState('idle')
     const onTitleChanged = e => setTitle(e.target.value)
     const onContentChanged = e => setContent(e.target.value)
     const onAuthorChanged = e => setUserId(e.target.value)
 
+    const canSave = [title, content, userId].every(Boolean) && addRequestStatus === 'idle'
     const dispatch = useDispatch()
     const users = useSelector(selectALlUser)
     const onSaveCliced = () => {
-        if (title && content) {
-            dispatch(postAddded(title, content, userId))
-            setContent('')
-            setTitle('')
+        if (canSave) {
+            try {
+                setAddRequestStatus('peding')
+                dispatch(addNewPost({ title, body: content, userId })).unwrap()
+                // unwrap () to return a promise ==> in trycatch
+                // in case error ==> catch will ben run. 
+                setTitle('')
+                setContent("")
+                setUserId('')
+                setAddRequestStatus('idle')
+            } catch (error) {
+                console.log(error)
+            } finally {
+            }
         }
     }
 
@@ -29,7 +40,6 @@ export default function AddPost() {
             {user.name}
         </option>
     })
-    const canSave = Boolean(title) && Boolean(content) && Boolean(userId)
     return (
         <section>
             <h2>

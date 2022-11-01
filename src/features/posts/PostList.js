@@ -1,10 +1,7 @@
 import React from 'react'
 import { useSelector, useDispatch, } from 'react-redux'
 import { useEffect } from 'react'
-import PostAuthor from './PostAuthor'
 import { selectAllPost, getPoststatus, fetchPosts, getPostsErr } from './postsSlice'
-import ReactionBtn from './ReactionBtn'
-import TimeAgo from './TimeAgo'
 import PostsExcept from './PostsExcept'
 export default function PostList() {
     const dispatch = useDispatch()
@@ -26,10 +23,10 @@ export default function PostList() {
         content = <p>...loading</p>
     } else if (postsStatus === 'succeeded') {
 
-        const orderedPost = posts?.slice(0,10).sort((a, b) => b.date.localeCompare(a.date))
+        const orderedPost = posts?.slice(0, 10).sort((a, b) => b.date.localeCompare(a.date))
 
         content = orderedPost?.map((item, index) => {
-         return   <PostsExcept key={item?.id} post={item}></PostsExcept>
+            return <PostsExcept key={item?.id} post={item}></PostsExcept>
         })
 
     } else if (postsStatus === 'failed') {
