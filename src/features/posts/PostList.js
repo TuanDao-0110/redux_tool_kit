@@ -1,36 +1,48 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch, } from 'react-redux'
+import { useEffect } from 'react'
 import PostAuthor from './PostAuthor'
-import { selectAllPost } from './postsSlice'
+import { selectAllPost, getPoststatus, fetchPosts, getPostsErr } from './postsSlice'
 import ReactionBtn from './ReactionBtn'
 import TimeAgo from './TimeAgo'
+import PostsExcept from './PostsExcept'
 export default function PostList() {
+    const dispatch = useDispatch()
     // const posts = useSelector(state => state.postsSliceReducer)
 
     // we can write shorten like this:
     const posts = useSelector(selectAllPost)
+    const postsStatus = useSelector(getPoststatus)
+    const error = useSelector(getPostsErr)
+    console.log(postsStatus)
+    useEffect(() => {
+        if (postsStatus === 'idle') {
+            dispatch(fetchPosts())
+        }
+    }, [postsStatus, dispatch])
     // sorting the post : 
-    const orderedPost = posts.slice().sort((a, b) => b.date.localeCompare(a.date))
-    const renderedPost = () => {
-        return orderedPost?.map((item, index) => {
-            return <article key={`${item.id}--${index}`}>
-                <h3>{item.title}</h3>
-                <p>{item.content?.substring(0, 100)}</p>
-                <p className='postCreadit'>
-                    <PostAuthor userId={item?.userId}></PostAuthor>
-                    <TimeAgo timestamp={item.date}></TimeAgo>
+    let content;
+    if (postsStatus === 'loading') {
+        content = <p>...loading</p>
+    } else if (postsStatus === 'succeeded') {
 
-                </p>
-                <ReactionBtn post={item}></ReactionBtn>
-            </article >
+        const orderedPost = posts?.slice(0,10).sort((a, b) => b.date.localeCompare(a.date))
+
+        content = orderedPost?.map((item, index) => {
+         return   <PostsExcept key={item?.id} post={item}></PostsExcept>
         })
+
+    } else if (postsStatus === 'failed') {
+        content = <p>{error}</p>
     }
+
+
 
 
     return (
         <section>
             <h2>Posts</h2>
-            {renderedPost()}
+            {content}
         </section>
     )
 }
