@@ -1,9 +1,12 @@
+import AddPost from "./features/posts/AddPost";
+import PostList from "./features/posts/PostList";
 
 function App() {
   return (
-   <div>
-this is react ap
-   </div>
+    <main className="App">
+      <AddPost></AddPost>
+      <PostList></PostList>
+    </main>
   );
 }
 
