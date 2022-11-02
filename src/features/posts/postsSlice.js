@@ -1,13 +1,17 @@
-import { createSlice, nanoid, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, createSelector, createEntityAdapter } from "@reduxjs/toolkit";
 import { sub } from 'date-fns'
 import axios from 'axios'
 const POSTS_URL = 'https://jsonplaceholder.typicode.com/posts';
 
-const initialState = {
-    posts: [],
+const postsApdapter = createEntityAdapter({
+    sortComparer: (a, b) => b.date.locleCompare(a.date)
+})
+const initialState = postsApdapter.getInitialState({
+    // posts: [],
     status: 'idle', // 'idle' || 'loading' || 'succeeded' || 'failed'
-    error: null
-}
+    error: null,
+    count: 0
+})
 // create middles thunk: 
 // 1. paramater is prefix ==> generate action
 //2. payload creater callback
@@ -57,41 +61,19 @@ const postSlice = createSlice({
     initialState,//initialState is known as initialState above ==> now it become this reducer's value
     reducers: {
         // 1. reducer
-        postAddded: {
-            // reducer on this case just doing actions 
-            reducer(state, action) {
-                state.posts.push(action.payload)
-            },
-            // prepare in this will present for action.payload: ==> it help to modify payload structure 
-            prepare(title, content, userId) {
-                return {
-                    payload: {
-                        id: nanoid(),
-                        title,
-                        content,
-                        userId,
-                        date: new Date().toISOString(),
-                        reactions: {
-                            thumbsUp: 0,
-                            wow: 0,
-                            heart: 0,
-                            rocket: 0,
-                            coffee: 0
-                        }
-                    }
-                }
-            }
+        increaseCount(state, action) {
+            state.count = state.count + 1
         },
         // 2. reducer
         reactionAdded: (state, action) => {
             const { postId, reaction } = action.payload
-            const existingPost = state.posts.find(post => post.id === postId)
+            // const existingPost = state.posts.find(post => post.id === postId)
+            // pass
+            const existingPost = state.entities[postId]
             if (existingPost) {
                 existingPost.reactions[reaction]++
             }
         },
-
-
     },
     extraReducers: (builder) => {
         builder
@@ -118,7 +100,8 @@ const postSlice = createSlice({
                     return post
                 })
                 // merge it the posts
-                state.posts = state.posts.concat(loadedPost)
+                // state.posts = state.posts.concat(loadedPost)
+                postsApdapter.updateMany(state,loadedPost)
             })
             // 3. in case we fail to fetch data.
             .addCase(fetchPosts.rejected, (state, action) => {
@@ -140,7 +123,8 @@ const postSlice = createSlice({
                     rocket: 0,
                     coffee: 0
                 }
-                state.posts.push(action.payload)
+                // state.posts.push(action.payload)
+                postsApdapter.addOne(state,action.payload)
             })
             .addCase(deletePost.fulfilled, (state, action) => {
                 if (!action.payload?.id) {
@@ -172,10 +156,18 @@ const postSlice = createSlice({
 export const selectAllPost = (state) => state.postsSliceReducer.posts;
 export const getPoststatus = (state) => state.postsSliceReducer.status;
 export const getPostsErr = (state) => state.postsSliceReducer.error;
+export const getCount = (state) => state.postsSliceReducer.count;
 
 export const selectPostById = (state, postId) => state.postsSliceReducer.posts.find(post => post.id === postId)
 
+export const selectPostByUser = createSelector(
+    // 1. parameter it can be selector/callback fn...
+    [selectAllPost, (state, userId) => userId],
+    // 2. now we have new selector
+    (post, userId) => post.filter(post => post.userId === userId)
+)
+
 // epxort action
-export const { postAddded, reactionAdded, } = postSlice.actions
+export const { increaseCount, reactionAdded, } = postSlice.actions
 // export reducer
 export default postSlice.reducer

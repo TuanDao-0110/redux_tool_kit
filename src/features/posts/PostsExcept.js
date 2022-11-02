@@ -2,9 +2,9 @@ import React from 'react'
 import PostAuthor from './PostAuthor'
 import TimeAgo from './TimeAgo'
 import ReactionBtn from './ReactionBtn'
-import {Link} from 'react-router-dom'
-export default function PostsExcept({post}) {
-    
+import { Link } from 'react-router-dom'
+const PostsExcept = ({ post }) => {
+
     return <article>
         <h2>{post.title}</h2>
         <p className='excerpt'>{post.body?.substring(0, 75)}</p>
@@ -17,3 +17,6 @@ export default function PostsExcept({post}) {
         <ReactionBtn post={post}></ReactionBtn>
     </article >
 }
+// Memo allow PostsExcept not reRender if (post's value not change)
+// PostsExcept = React.memo(PostsExcept)
+export default PostsExcept

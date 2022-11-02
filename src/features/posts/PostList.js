@@ -15,9 +15,7 @@ export default function PostList() {
     if (postsStatus === 'loading') {
         content = <p>...loading</p>
     } else if (postsStatus === 'succeeded') {
-
         const orderedPost = posts?.slice().sort((a, b) => b.date.localeCompare(a.date))
-
         content = orderedPost?.map((item, index) => {
             return <PostsExcept key={item?.id} post={item}></PostsExcept>
         })
@@ -25,10 +23,6 @@ export default function PostList() {
     } else if (postsStatus === 'failed') {
         content = <p>{error}</p>
     }
-
-
-
-
     return (
         <section>
             {content}
