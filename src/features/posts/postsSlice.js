@@ -1,10 +1,10 @@
-import { createSlice, createAsyncThunk, createSelector, createEntityAdapter } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, createSelector, createEntityAdapter, configureStore } from "@reduxjs/toolkit";
 import { sub } from 'date-fns'
 import axios from 'axios'
 const POSTS_URL = 'https://jsonplaceholder.typicode.com/posts';
 
 const postsApdapter = createEntityAdapter({
-    sortComparer: (a, b) => b.date.locleCompare(a.date)
+    sortComparer: (a, b) => b.date.localeCompare(a.date)
 })
 const initialState = postsApdapter.getInitialState({
     // posts: [],
@@ -57,7 +57,7 @@ export const updatePost = createAsyncThunk('post/updatePost', async (initialPost
     }
 })
 const postSlice = createSlice({
-    name: 'posts',
+    name: 'postsSliceReducer',
     initialState,//initialState is known as initialState above ==> now it become this reducer's value
     reducers: {
         // 1. reducer
@@ -69,8 +69,10 @@ const postSlice = createSlice({
             const { postId, reaction } = action.payload
             // const existingPost = state.posts.find(post => post.id === postId)
             // pass
+            // entities is offer by createEntityAdapter to state ==> so state will use entities to ....
             const existingPost = state.entities[postId]
             if (existingPost) {
+                
                 existingPost.reactions[reaction]++
             }
         },
@@ -101,7 +103,7 @@ const postSlice = createSlice({
                 })
                 // merge it the posts
                 // state.posts = state.posts.concat(loadedPost)
-                postsApdapter.updateMany(state,loadedPost)
+                postsApdapter.setAll(state, loadedPost)
             })
             // 3. in case we fail to fetch data.
             .addCase(fetchPosts.rejected, (state, action) => {
@@ -124,7 +126,7 @@ const postSlice = createSlice({
                     coffee: 0
                 }
                 // state.posts.push(action.payload)
-                postsApdapter.addOne(state,action.payload)
+                postsApdapter.addOne(state, action.payload)
             })
             .addCase(deletePost.fulfilled, (state, action) => {
                 if (!action.payload?.id) {
@@ -133,8 +135,9 @@ const postSlice = createSlice({
                     return
                 }
                 const { id } = action.payload
-                const posts = state.posts.filter(post => post.id === id)
-                state.posts = posts
+                // const posts = state.posts.filter(post => post.id === id)
+                // state.posts = posts
+                postsApdapter.removeOne(state, id)
             })
             .addCase(updatePost.fulfilled, (state, action) => {
                 if (!action.payload?.id) {
@@ -142,24 +145,39 @@ const postSlice = createSlice({
                     console.log(action.payload)
                     return
                 }
-                const { id } = action.payload
+                // const { id } = action.payload
                 action.payload.date = new Date().toISOString()
                 // every post have there special id ==> so we filter all the post except the  new one
-                const posts = state.posts.filter(post => post.id !== id)
+                // const posts = state.posts.filter(post => post.id !== id)
                 // after then we add it to new arr and assign new arr to state.post
-                state.posts = [...posts, action.payload]
+                // state.posts = [...posts, action.payload]
+                postsApdapter.upsertOne(state, action.payload)
             })
     }
 })
 
 
-export const selectAllPost = (state) => state.postsSliceReducer.posts;
+// export const selectAllPost = (state) => state.postsSliceReducer.posts;
 export const getPoststatus = (state) => state.postsSliceReducer.status;
 export const getPostsErr = (state) => state.postsSliceReducer.error;
 export const getCount = (state) => state.postsSliceReducer.count;
 
-export const selectPostById = (state, postId) => state.postsSliceReducer.posts.find(post => post.id === postId)
+// export const selectPostById = (state, postId) => state.postsSliceReducer.posts.find(post => post.id === postId)
 
+
+// getSelector creates these selectors and we rename them with aliases using destructuring
+export const {
+    // 1. take all the entities list
+    selectAll: selectAllPost,
+    // 2. take value by id ==> so , we have to insert it's ID when we call it's selector
+    selectById: selectPostById,
+    // 3. take all ID Array. 
+    selectIds: selectPostIds,
+    // pass in a selector that return the posts slice of stated
+} = postsApdapter.getSelectors(state => state.postsSliceReducer)
+
+
+// create own selector:
 export const selectPostByUser = createSelector(
     // 1. parameter it can be selector/callback fn...
     [selectAllPost, (state, userId) => userId],

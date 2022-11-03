@@ -3,8 +3,10 @@ import PostAuthor from './PostAuthor'
 import TimeAgo from './TimeAgo'
 import ReactionBtn from './ReactionBtn'
 import { Link } from 'react-router-dom'
-const PostsExcept = ({ post }) => {
-
+import { useSelector } from 'react-redux'
+import { selectPostById } from './postsSlice'
+const PostsExcept = ({ postId }) => {
+    const post = useSelector(state => selectPostById(state,postId))
     return <article>
         <h2>{post.title}</h2>
         <p className='excerpt'>{post.body?.substring(0, 75)}</p>
