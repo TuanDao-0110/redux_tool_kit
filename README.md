@@ -1,5 +1,6 @@
 ### User Stories 
 
-## lesson_5
+## lesson_6
 
-# fix and apply optimization for react
+# simple todo list. 
+
