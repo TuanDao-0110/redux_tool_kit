@@ -51,7 +51,7 @@ const TodoList = () => {
     if (isLoading) {
         content = <p>Loading...</p>
     } else if (isSuccess) {
-        content = todos?.slice(todos.length - 10, todos.length - 1).map((todo, index) => {
+        content = todos?.slice(todos.length - 10, todos.length).map((todo, index) => {
             return <article key={todo.id}>
                 <div className="todo">
                     <input

@@ -11,6 +11,7 @@ export const apiSlice = createApi({
             query: () => ({
                 url: '/todos',
             }),
+            transformResponse:res => res.sort((a,b)=> a.id <b.id),
             providesTags: ["Todos"]
             // so we set up it 
         }),
