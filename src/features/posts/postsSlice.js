@@ -1,4 +1,4 @@
-import { createEntityAdapter } from "@reduxjs/toolkit";
+import { createEntityAdapter, createSelector } from "@reduxjs/toolkit";
 import { sub } from 'date-fns';
 import { apiSlice } from "../api/apiSlice";
 
@@ -7,6 +7,9 @@ const postsAdapter = createEntityAdapter({
 })
 
 const initialState = postsAdapter.getInitialState()
+
+
+
 
 export const extendedApiSlice = apiSlice.injectEndpoints({
     endpoints: builder => ({
@@ -17,9 +20,9 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
                 let min = 1;
                 // 1.1 we set ourdata ==>    
                 const loadedPosts = responseData.map(post => {
-                    // 1.1.1 add time 
+                    // 1.1.1 add time if it dont have time
                     if (!post?.date) post.date = sub(new Date(), { minutes: min++ }).toISOString();
-                    // 1.1.1 add object action 
+                    // 1.1.1 add object action if dont have reaction
                     if (!post?.reactions) post.reactions = {
                         thumbsUp: 0,
                         wow: 0,
@@ -39,7 +42,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
                 // ids here is from createEntityApdater when it return entities's [value] vs ids[]
                 // first value of array is our form ==> second value is to announce each data with different id. 
                 ...result.ids.map(id => ({ type: 'Post', id }))
-                
+
             ]
         }),
         getPostsByUserId: builder.query({
@@ -146,3 +149,23 @@ export const {
 } = extendedApiSlice
 
 
+
+// return the query result object 
+export const selectPostResult = extendedApiSlice.endpoints.getPosts.select()
+
+// create memized selector 
+const selectPostsData = createSelector(
+    selectPostResult,
+    postsResult => postsResult.data // normalized state object with ids && entities
+)
+
+
+// getSelectors creates these selectors and we rename with alises using destructuring
+
+export const {
+    selectAll: selectAllPost,
+    selectById: selectPostById,
+    selectIds: selectPostIds,
+
+    // pass in a selector that return the post slice of state 
+} = postsAdapter.getSelectors(state => selectPostsData(state) ?? initialState)
