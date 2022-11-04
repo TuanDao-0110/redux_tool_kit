@@ -1,7 +1,6 @@
 import { useSelector } from "react-redux";
 import PostsExcerpt from "./PostsExcerpt";
-import { useGetPostsQuery } from './postsSlice';
-import { selectAllPost } from '../posts/postsSlice'
+import { selectPostResult, useGetPostsQuery } from './postsSlice';
 const PostsList = () => {
     const {
         data: posts,
@@ -10,8 +9,8 @@ const PostsList = () => {
         isError,
         error
     } = useGetPostsQuery('getPosts')
-    const allDate = useSelector(selectAllPost)
-    console.log(allDate)
+    const result = useSelector(selectPostResult)
+    console.log(result)
     let content;
     if (isLoading) {
         content = <p>"Loading..."</p>;

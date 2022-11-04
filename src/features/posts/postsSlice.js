@@ -156,16 +156,16 @@ export const selectPostResult = extendedApiSlice.endpoints.getPosts.select()
 // create memized selector 
 const selectPostsData = createSelector(
     selectPostResult,
-    postsResult => postsResult.data // normalized state object with ids && entities
+    postsResult => postsResult.data  // normalized state object with ids && entities
 )
-
-
 // getSelectors creates these selectors and we rename with alises using destructuring
-
 export const {
     selectAll: selectAllPost,
     selectById: selectPostById,
     selectIds: selectPostIds,
-
     // pass in a selector that return the post slice of state 
-} = postsAdapter.getSelectors(state => selectPostsData(state) ?? initialState)
+} = postsAdapter.getSelectors(state =>
+    // if state dont show any thing 
+    (selectPostsData(state))
+    // we can get data straight from initialState => 
+    && (initialState))
