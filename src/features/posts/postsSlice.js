@@ -12,10 +12,14 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
     endpoints: builder => ({
         getPosts: builder.query({
             query: () => '/posts',
+            // 1 . we do some job with our data we receive
             transformResponse: responseData => {
                 let min = 1;
+                // 1.1 we set ourdata ==>    
                 const loadedPosts = responseData.map(post => {
+                    // 1.1.1 add time 
                     if (!post?.date) post.date = sub(new Date(), { minutes: min++ }).toISOString();
+                    // 1.1.1 add object action 
                     if (!post?.reactions) post.reactions = {
                         thumbsUp: 0,
                         wow: 0,
@@ -28,8 +32,14 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
                 return postsAdapter.setAll(initialState, loadedPosts)
             },
             providesTags: (result, error, arg) => [
+                // 1.2 type here is about 
                 { type: 'Post', id: "LIST" },
+                // so the result will give list of id when createEnityAdapter offer us 
+                // we map it and return the same 
+                // ids here is from createEntityApdater when it return entities's [value] vs ids[]
+                // first value of array is our form ==> second value is to announce each data with different id. 
                 ...result.ids.map(id => ({ type: 'Post', id }))
+                
             ]
         }),
         getPostsByUserId: builder.query({
@@ -134,3 +144,5 @@ export const {
     useDeletePostMutation,
     useAddReactionMutation
 } = extendedApiSlice
+
+

@@ -1,3 +1,4 @@
+import { useSelector } from "react-redux";
 import PostsExcerpt from "./PostsExcerpt";
 import { useGetPostsQuery } from './postsSlice';
 
@@ -9,7 +10,6 @@ const PostsList = () => {
         isError,
         error
     } = useGetPostsQuery('getPosts')
-
     let content;
     if (isLoading) {
         content = <p>"Loading..."</p>;
