@@ -164,8 +164,10 @@ export const {
     selectById: selectPostById,
     selectIds: selectPostIds,
     // pass in a selector that return the post slice of state 
-} = postsAdapter.getSelectors(state =>
+} = postsAdapter.getSelectors(
+    state=>
     // if state dont show any thing 
     (selectPostsData(state))
     // we can get data straight from initialState => 
-    && (initialState))
+    && initialState
+)
