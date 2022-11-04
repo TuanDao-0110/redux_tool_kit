@@ -1,14 +1,25 @@
-import React, { Fragment } from 'react';
-import ReactDOM from 'react-dom/client';
+import React from 'react';
+import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-// 1. import api create 
-import {apiSlice} from './features/api/apiSlice'
-import { ApiProvider } from '@reduxjs/toolkit/dist/query/react';
+import { store } from './app/store';
+import { Provider } from 'react-redux';
+import { fetchPosts } from './features/posts/postsSlice';
+import { fetchUsers } from './features/users/usersSlice';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-ReactDOM.createRoot(document.getElementById('root'))
-  .render(
-    <ApiProvider api={apiSlice}>
-      <App />
-    </ApiProvider>
-  );
+store.dispatch(fetchPosts());
+store.dispatch(fetchUsers());
+
+ReactDOM.render(
+  <React.StrictMode>
+    <Provider store={store}>
+      <Router>
+        <Routes>
+          <Route path="/*" element={<App />} />
+        </Routes>
+      </Router>
+    </Provider>
+  </React.StrictMode>,
+  document.getElementById('root')
+);
