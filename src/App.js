@@ -1,34 +1,24 @@
-import PostsList from "./features/posts/PostsList";
-import AddPostForm from "./features/posts/AddPostForm";
-import SinglePostPage from "./features/posts/SinglePostPage";
-import EditPostForm from "./features/posts/EditPostForm";
-import UsersList from "./features/users/UsersList";
-import UserPage from './features/users/UserPage';
-import Layout from "./components/Layout";
-import { Routes, Route, Navigate } from 'react-router-dom';
 
+import { Routes, Route, Navigate } from 'react-router-dom';
+import Public from './components/Public'
+import Layout from './components/Layout';
+import Login from './features/auth/Login'
+import RequireAuth from './features/auth/RequireAuth';
+import Welcome from './features/auth/Welcome'
+import UserList from './features/users/UserList'
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Layout />}>
-
-        <Route index element={<PostsList />} />
-
-        <Route path="post">
-          <Route index element={<AddPostForm />} />
-          <Route path=":postId" element={<SinglePostPage />} />
-          <Route path="edit/:postId" element={<EditPostForm />} />
+      <Route path='/' element={<Layout></Layout>}>
+        <Route index element={<Public></Public>}></Route>
+        <Route path='login' element={<Login></Login>}></Route>
+        {/* protect route */}
+        <Route element={<RequireAuth></RequireAuth>}>
+          <Route path='welcome' element={<Welcome></Welcome>}></Route>
+          <Route path='userslist' element={<UserList></UserList>}></Route>
         </Route>
-
-        <Route path="user">
-          <Route index element={<UsersList />} />
-          <Route path=":userId" element={<UserPage />} />
-        </Route>
-
-        {/* Catch all - replace with 404 component if you want */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-
       </Route>
+
     </Routes>
   );
 }
