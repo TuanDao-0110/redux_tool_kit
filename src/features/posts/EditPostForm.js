@@ -10,7 +10,7 @@ const EditPostForm = () => {
 
     const [updatePost, { isLoading }] = useUpdatePostMutation()
     const [deletePost] = useDeletePostMutation()
-
+                            
     const { post, isLoading: isLoadingPosts, isSuccess } = useGetPostsQuery('getPosts', {
         selectFromResult: ({ data, isLoading, isSuccess }) => ({
             post: data?.entities[postId],

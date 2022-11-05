@@ -9,7 +9,7 @@ const UsersList = () => {
         isSuccess,
         isError,
         error
-    } = useGetUsersQuery('getUsers')
+    } = useGetUsersQuery()
 
     let content;
     if (isLoading) {

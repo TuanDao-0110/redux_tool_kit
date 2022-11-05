@@ -19,7 +19,7 @@ const UserPage = () => {
             error
         }),
     })
-
+    
     const {
         data: postsForUser,
         isLoading,

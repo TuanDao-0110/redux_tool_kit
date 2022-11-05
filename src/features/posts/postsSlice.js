@@ -118,6 +118,8 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
                 // so that a user can't do the same reaction more than once
                 body: { reactions }
             }),
+
+            // queryFulfilled is promsie
             async onQueryStarted({ postId, reactions }, { dispatch, queryFulfilled }) {
                 // `updateQueryData` requires the endpoint name and cache key arguments,
                 // so it knows which piece of cache state to update
@@ -130,12 +132,13 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
                     })
                 )
                 try {
+                    // check if it undo ==> we use again old data.
                     await queryFulfilled
                 } catch {
                     patchResult.undo()
                 }
             }
-        })
+        }),
     })
 })
 
@@ -148,8 +151,7 @@ export const {
     useAddReactionMutation
 } = extendedApiSlice
 
-
-
+console.log(initialState)
 // return the query result object 
 export const selectPostResult = extendedApiSlice.endpoints.getPosts.select()
 
