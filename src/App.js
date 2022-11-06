@@ -15,7 +15,7 @@ function App() {
         {/* protect route */}
         <Route element={<RequireAuth></RequireAuth>}>
           <Route path='welcome' element={<Welcome></Welcome>}></Route>
-          <Route path='userslist' element={<UserList></UserList>}></Route>
+          <Route path='userlist' element={<UserList></UserList>}></Route>
         </Route>
       </Route>
 
